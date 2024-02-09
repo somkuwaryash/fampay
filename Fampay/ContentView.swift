@@ -8,17 +8,44 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var viewModel = CardGroupsViewModel()
+    @State private var isRefreshing = false
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            if viewModel.isLoading {
+                ProgressView()
+            } else if let error = viewModel.error {
+                Text("Error: \(error.localizedDescription)")
+            } else {
+                ScrollView {
+                    ForEach(viewModel.cardGroups) { cardGroup in
+                        CardGroupView(cardGroup: cardGroup)
+                            .padding(.horizontal, 20)
+                    }
+                }
+                .gesture(DragGesture()
+                            .onChanged { value in
+                                if value.translation.height > 0 && !isRefreshing {
+                                    isRefreshing = true
+                                    viewModel.fetchData()
+                                }
+                            }
+                            .onEnded { _ in
+                                isRefreshing = false
+                            }
+                )
+            }
         }
-        .padding()
+        .onAppear {
+            viewModel.fetchData() // Fetch data when the view appears
+        }
     }
 }
+
 
 #Preview {
     ContentView()
 }
+
+
