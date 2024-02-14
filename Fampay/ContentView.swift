@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     @ObservedObject var viewModel = CardGroupsViewModel()
@@ -38,14 +39,16 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            viewModel.fetchData() // Fetch data when the view appears
+            viewModel.fetchData()
+        }
+        .onChange(of: viewModel.cardGroups) { _ in
+            viewModel.error = nil
         }
     }
 }
 
-
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
-
-

@@ -38,13 +38,14 @@ class CardGroupsViewModel: ObservableObject {
                 }
             }, receiveValue: { [weak self] apiResponse in
                 self?.cardGroups = apiResponse.first?.hc_groups ?? []
-                print("Data received successfully: \(apiResponse.first?.hc_groups ?? [])")
+                print("Data received successfully: \(apiResponse)")
+                /**print("Data received successfully: \(apiResponse.first?.hc_groups ?? [])")
                 for i in 0 ..< (apiResponse.first?.hc_groups.count ?? 0) {
                     print("card group name \(apiResponse.first?.hc_groups[i].name ?? "")")
                     for j in 0 ..< (apiResponse.first?.hc_groups[i].cards.count ?? 0) {
                         print("card name \(apiResponse.first?.hc_groups[i].cards[j].name ?? "")")
                     }
-                }
+                }**/
             })
             .store(in: &cancellables)
     }
