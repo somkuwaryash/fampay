@@ -24,20 +24,26 @@ struct ContentView: View {
                         CardGroupView(cardGroup: cardGroup)
                             .padding(.horizontal, 20)
                     }
+                    .padding(.top, 20) // Add padding at the top for refreshing indicator
+                    .gesture(DragGesture()
+                        .onChanged { value in
+                            if value.translation.height > 0 && !isRefreshing {
+                                isRefreshing = true
+                                viewModel.fetchData()
+                            }
+                        }
+                        .onEnded { _ in
+                            isRefreshing = false
+                        }
+                    )
                 }
-                .gesture(DragGesture()
-                            .onChanged { value in
-                                if value.translation.height > 0 && !isRefreshing {
-                                    isRefreshing = true
-                                    viewModel.fetchData()
-                                }
-                            }
-                            .onEnded { _ in
-                                isRefreshing = false
-                            }
-                )
             }
         }
+        .overlay(
+            isRefreshing ? ProgressView()
+                .padding(.top, 10)
+                .frame(maxWidth: .infinity, alignment: .top) : nil
+        )
         .onAppear {
             viewModel.fetchData()
         }
@@ -46,6 +52,7 @@ struct ContentView: View {
         }
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
